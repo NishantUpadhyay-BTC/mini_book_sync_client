@@ -1,0 +1,70 @@
+<%= form_for :booking,html:{ class: 'form-horizontal'} do |f| %>
+	<div class="form-group">
+      <label class="control-label col-sm-2">Name</label>
+      <div class="col-sm-10">
+      	<%= f.text_field :name, class: 'form-control', placeholder:'Enter Name' %>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label class="control-label col-sm-2">Daily Rate</label>
+      <div class="col-sm-10">
+        <%= f.number_field :daily_rate , class: 'form-control', placeholder:'Enter Daily Rate' %>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-sm-2">Select Date</label>
+      <div class="col-sm-4">
+        <%= f.text_field :start_date , class: 'form-control', placeholder:'Select Start Date & Time' %>
+      </div>
+      <div class="col-sm-4">
+        <%= f.text_field :end_date , class: 'form-control', placeholder:'Select End Date & Time' %>
+      </div>
+    </div>
+    
+    <div class="form-group">        
+      <label class="control-label col-sm-2">Total Cost</label>
+      <div class="col-sm-10">
+        <%= f.text_field :total_cost, value: 0, class: 'form-control', disabled: true %>
+      </div>
+    </div>
+
+    <div class="form-group">        
+      <div class="col-sm-offset-2 col-sm-10">
+      	<%= f.submit "Submit", class: 'btn btn-default' %>
+      </div>
+    </div>
+<% end %>
+
+<script>
+$(function () {
+  $('#booking_start_date').datetimepicker({
+  	sideBySide: true
+  });
+  $('#booking_end_date').datetimepicker({
+    sideBySide: true,
+    useCurrent: false
+  });
+  $("#booking_start_date").on("dp.change", function (e) {
+    $('#booking_end_date').data("DateTimePicker").minDate(e.date);
+    calculate_total_cost();
+  });
+  $("#booking_end_date").on("dp.change", function (e) {
+    $('#booking_start_date').data("DateTimePicker").maxDate(e.date);
+    calculate_total_cost();
+  });
+  $("#booking_daily_rate").on("change",function(){
+  	calculate_total_cost();
+  });
+});
+function calculate_total_cost(){
+	if($("#booking_start_date").val() && $("#booking_end_date").val() && $('#booking_daily_rate').val()){
+		start_date = new Date($("#booking_start_date").val());
+		end_date = new Date($("#booking_end_date").val());
+		daily_rate = $('#booking_daily_rate').val();
+		diff_date = (end_date - start_date)/ (1000 * 3600 * 24);
+		$('#booking_total_cost').val(Math.round(diff_date) * daily_rate);
+	}
+}
+</script>
